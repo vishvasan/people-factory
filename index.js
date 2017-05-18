@@ -1,27 +1,50 @@
-const personForm = document.querySelector('form')
+const App = {
+  init() {
+    const personForm = document.querySelector('form')
+    console.log(this)
+    console.log(this.handleSubmit)
+    personForm.addEventListener('submit', (ev) => this.handleSubmit(ev))
+  },
 
-const handleSubmit = (ev) => {
-  ev.preventDefault()
-  const form = ev.target
-  const details = document.querySelector('.details')
+  renderColor(hairColor) {
+    const colorDiv = document.createElement('div')
+    colorDiv.style.height = '50px'
+    colorDiv.style.width = '100px'
+    colorDiv.style.backgroundColor = hairColor
+    return colorDiv
+  },
 
-  const personName = form.personName.value
-  const hairColor = form.hairColor.value
-  const age = form.age.value
-  const birthplace = form.birthplace.value
+  renderListItem(name, value) {
+    const li = document.createElement('li')
+    li.innerHTML = `${name}: ${value}`
+    return li
+  },
 
-  const colorDiv = `
-    <div style="height: 50px; width: 100px; background-color: ${hairColor}"></div>
-  `
+  renderList(person) {
+    const list = document.createElement('ul')
+    Array.from(person).map((input, _i, _elementsArray) => {
+      if (input.value) {
+        let value = input.value
+        if (input.type === 'color') {
+          value = this.renderColor(value).outerHTML
+        }
+        let li = this.renderListItem(input.name, value)
+        list.appendChild(li)
+      }
+    })
 
-  details.innerHTML = `
-    <ul>
-      <li>Name: ${personName}</li>
-      <li>Hair Color: ${colorDiv}</li>
-      <li>Age: ${age}</li>
-      <li>Birthplace: ${birthplace}</li>
-    </ul>
-  `
+    return list
+  },
+
+  handleSubmit(ev) {
+    ev.preventDefault()
+    const form = ev.target
+    const details = document.querySelector('.details')
+
+    const list = this.renderList(form.elements)
+
+    details.appendChild(list)
+  },
 }
 
-personForm.addEventListener('submit', handleSubmit)
+App.init()
